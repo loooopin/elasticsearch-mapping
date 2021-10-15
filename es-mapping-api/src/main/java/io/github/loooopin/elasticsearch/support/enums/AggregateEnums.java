@@ -6,7 +6,7 @@ import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.sum.SumAggregationBuilder;
 
 /**
- * User: huxiaodong24
+ * User: loooopin
  * Date: 2021/10/13
  * Time: 18:28
  * Description:
