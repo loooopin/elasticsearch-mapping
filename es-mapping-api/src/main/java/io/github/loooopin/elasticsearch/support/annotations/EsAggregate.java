@@ -1,6 +1,6 @@
-package io.github.loooopin.support.annotations;
+package io.github.loooopin.elasticsearch.support.annotations;
 
-import io.github.loooopin.support.enums.AggregateEnums;
+import io.github.loooopin.elasticsearch.support.enums.AggregateEnums;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

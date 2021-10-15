@@ -1,4 +1,4 @@
-package io.github.loooopin.util;
+package io.github.loooopin.elasticsearch.util;
 
 import java.util.Collection;
 import java.util.Map;

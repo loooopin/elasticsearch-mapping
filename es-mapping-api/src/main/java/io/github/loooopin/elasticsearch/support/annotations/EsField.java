@@ -1,6 +1,5 @@
-package io.github.loooopin.support.annotations;
+package io.github.loooopin.elasticsearch.support.annotations;
 
-import io.github.loooopin.support.enums.ComparisonEnums;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,6 +14,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface EsComparison {
-    ComparisonEnums value();
+public @interface EsField {
+    String value();
+    //是否仅用于比较，不用于字段映射
+    boolean onlyCompare() default false;
 }

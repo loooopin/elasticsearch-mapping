@@ -1,5 +1,6 @@
-package io.github.loooopin.support.annotations;
+package io.github.loooopin.elasticsearch.support.annotations;
 
+import io.github.loooopin.elasticsearch.support.enums.ComparisonEnums;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,11 +10,11 @@ import java.lang.annotation.Target;
 /**
  * User: huxiaodong24
  * Date: 2021/10/13
- * Time: 18:24
+ * Time: 18:22
  * Description:
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface EsIndex {
-    String value();
+@Target(ElementType.FIELD)
+public @interface EsComparison {
+    ComparisonEnums value();
 }

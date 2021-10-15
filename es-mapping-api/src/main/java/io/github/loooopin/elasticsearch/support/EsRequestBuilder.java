@@ -1,8 +1,8 @@
-package io.github.loooopin.support;
+package io.github.loooopin.elasticsearch.support;
 
-import io.github.loooopin.support.enums.AggregateEnums;
-import io.github.loooopin.support.enums.ComparisonEnums;
-import io.github.loooopin.util.CollectionUtils;
+import io.github.loooopin.elasticsearch.support.enums.AggregateEnums;
+import io.github.loooopin.elasticsearch.support.enums.ComparisonEnums;
+import io.github.loooopin.elasticsearch.util.CollectionUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;

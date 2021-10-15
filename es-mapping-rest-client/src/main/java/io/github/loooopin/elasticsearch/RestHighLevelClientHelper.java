@@ -1,8 +1,8 @@
-package io.github.loooopin;
+package io.github.loooopin.elasticsearch;
 
-import com.es.mapping.api.EsSearchHelperFacade;
-import com.es.mapping.support.EsRequestBuilder;
-import com.es.mapping.support.EsResponseResolver;
+import io.github.loooopin.elasticsearch.api.EsSearchHelperFacade;
+import io.github.loooopin.elasticsearch.support.EsRequestBuilder;
+import io.github.loooopin.elasticsearch.support.EsResponseResolver;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;

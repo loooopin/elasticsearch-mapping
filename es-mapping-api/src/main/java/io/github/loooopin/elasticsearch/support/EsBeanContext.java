@@ -1,9 +1,9 @@
-package io.github.loooopin.support;
+package io.github.loooopin.elasticsearch.support;
 
-import io.github.loooopin.support.annotations.EsComparison;
-import io.github.loooopin.support.annotations.EsField;
-import io.github.loooopin.support.annotations.EsIndex;
-import io.github.loooopin.support.enums.ComparisonEnums;
+import io.github.loooopin.elasticsearch.support.annotations.EsComparison;
+import io.github.loooopin.elasticsearch.support.annotations.EsField;
+import io.github.loooopin.elasticsearch.support.annotations.EsIndex;
+import io.github.loooopin.elasticsearch.support.enums.ComparisonEnums;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

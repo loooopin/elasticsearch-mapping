@@ -1,22 +1,17 @@
+<<<<<<< HEAD
 **目录**
 
 [TOCM]
 
 [TOC]
+=======
+>>>>>>> 103c2b52cf5688c0286062da415cfdb87d9ed624
 ### 说明
 #### 支持es版本 6.3.2
 #### 开发目的
 	省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
 	省去解析聚合查询结果时for循环嵌套取值，防止业务代码中耦合了大量的只为取值而写的for循环
 ### QuickStart
-#### 引入依赖
-```
-        <dependency>
-            <groupId>com.es-mapping</groupId>
-            <artifactId>es-mapping-rest-client</artifactId>
-            <version>1.0-HIGHLEVEL-RELEASE</version>
-        </dependency>
-```
 #### 配置注解
 ```
 @EsIndex("realtime_1")

@@ -1,6 +1,6 @@
-package io.github.loooopin.support;
+package io.github.loooopin.elasticsearch.support;
 
-import io.github.loooopin.util.CollectionUtils;
+import io.github.loooopin.elasticsearch.util.CollectionUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;

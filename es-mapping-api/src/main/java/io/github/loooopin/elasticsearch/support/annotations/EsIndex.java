@@ -1,4 +1,4 @@
-package io.github.loooopin.support.annotations;
+package io.github.loooopin.elasticsearch.support.annotations;
 
 
 import java.lang.annotation.ElementType;
@@ -9,13 +9,11 @@ import java.lang.annotation.Target;
 /**
  * User: huxiaodong24
  * Date: 2021/10/13
- * Time: 18:22
+ * Time: 18:24
  * Description:
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface EsField {
+@Target(ElementType.TYPE)
+public @interface EsIndex {
     String value();
-    //是否仅用于比较，不用于字段映射
-    boolean onlyCompare() default false;
 }

@@ -1,7 +1,7 @@
-package io.github.loooopin.api;
+package io.github.loooopin.elasticsearch.api;
 
-import io.github.loooopin.support.EsRequestBuilder;
-import io.github.loooopin.support.EsResponseResolver;
+import io.github.loooopin.elasticsearch.support.EsRequestBuilder;
+import io.github.loooopin.elasticsearch.support.EsResponseResolver;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package io.github.loooopin.support.enums;
+package io.github.loooopin.elasticsearch.support.enums;
 
 /**
  * User: huxiaodong24

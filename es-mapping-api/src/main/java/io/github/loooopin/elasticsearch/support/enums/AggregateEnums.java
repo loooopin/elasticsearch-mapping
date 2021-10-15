@@ -1,4 +1,4 @@
-package io.github.loooopin.support.enums;
+package io.github.loooopin.elasticsearch.support.enums;
 
 
 import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
