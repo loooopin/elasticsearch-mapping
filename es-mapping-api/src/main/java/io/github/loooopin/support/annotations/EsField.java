@@ -1,4 +1,4 @@
-package com.es.mapping.support.annotations;
+package io.github.loooopin.support.annotations;
 
 
 import java.lang.annotation.ElementType;

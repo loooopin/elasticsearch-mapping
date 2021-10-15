@@ -1,8 +1,8 @@
-package com.es.mapping.support;
+package io.github.loooopin.support;
 
-import com.es.mapping.support.enums.AggregateEnums;
-import com.es.mapping.support.enums.ComparisonEnums;
-import com.es.mapping.util.CollectionUtils;
+import io.github.loooopin.support.enums.AggregateEnums;
+import io.github.loooopin.support.enums.ComparisonEnums;
+import io.github.loooopin.util.CollectionUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;

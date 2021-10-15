@@ -1,4 +1,4 @@
-package com.es.mapping.util;
+package io.github.loooopin.util;
 
 import java.util.Collection;
 import java.util.Map;

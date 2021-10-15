@@ -1,4 +1,4 @@
-package com.es.mapping.support.enums;
+package io.github.loooopin.support.enums;
 
 /**
  * User: huxiaodong24

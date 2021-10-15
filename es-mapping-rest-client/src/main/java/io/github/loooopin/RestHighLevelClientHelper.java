@@ -1,4 +1,4 @@
-package com.es.mapping;
+package io.github.loooopin;
 
 import com.es.mapping.api.EsSearchHelperFacade;
 import com.es.mapping.support.EsRequestBuilder;

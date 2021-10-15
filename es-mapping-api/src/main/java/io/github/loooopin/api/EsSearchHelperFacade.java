@@ -1,7 +1,7 @@
-package com.es.mapping.api;
+package io.github.loooopin.api;
 
-import com.es.mapping.support.EsRequestBuilder;
-import com.es.mapping.support.EsResponseResolver;
+import io.github.loooopin.support.EsRequestBuilder;
+import io.github.loooopin.support.EsResponseResolver;
 
 import java.io.Closeable;
 import java.io.IOException;

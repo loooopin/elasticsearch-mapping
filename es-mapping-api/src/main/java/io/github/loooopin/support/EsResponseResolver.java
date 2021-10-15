@@ -1,6 +1,6 @@
-package com.es.mapping.support;
+package io.github.loooopin.support;
 
-import com.es.mapping.util.CollectionUtils;
+import io.github.loooopin.util.CollectionUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.Aggregation;

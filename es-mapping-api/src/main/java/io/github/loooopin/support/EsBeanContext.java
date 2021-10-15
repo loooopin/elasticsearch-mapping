@@ -1,9 +1,9 @@
-package com.es.mapping.support;
+package io.github.loooopin.support;
 
-import com.es.mapping.support.annotations.EsComparison;
-import com.es.mapping.support.annotations.EsField;
-import com.es.mapping.support.annotations.EsIndex;
-import com.es.mapping.support.enums.ComparisonEnums;
+import io.github.loooopin.support.annotations.EsComparison;
+import io.github.loooopin.support.annotations.EsField;
+import io.github.loooopin.support.annotations.EsIndex;
+import io.github.loooopin.support.enums.ComparisonEnums;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
