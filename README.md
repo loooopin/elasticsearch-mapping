@@ -38,7 +38,7 @@ public class EsTest {
 #### 查询
 ```
     public void t4() throws IOException, IllegalAccessException {
-        //全局配置
+        //此处应更换到全局配置
         RestHighLevelClient restHighLevelClient = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
         EsSearchHelperFacade searchHelperFacade=new RestHighLevelClientHelper();
         searchHelperFacade.setRestClient(restHighLevelClient);
