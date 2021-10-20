@@ -65,6 +65,19 @@ public class EsTest {
         System.out.println(JSON.toJSONString(search));
         System.out.println(JSON.parseArray(JSON.toJSONString(search),EsTest.class));
     }
+    
+    //单个实体对应多个索引时，不使用EsIndex注解，直接在EsRequestBuilder中setEsIndex
+    public void t4() throws IOException, IllegalAccessException {
+	......
+        EsRequestBuilder esRequestBuilder = searchHelperFacade.requestBuilder(realtime).groupBy("userName", "warehouseNo", "userId")
+                .aggregation("qty1", AggregateEnums.SUM)
+                .aggregation("qty2", AggregateEnums.SUM)
+		.setEsIndex("realtime_444")
+                //非聚合的字段也查询
+                .setSearchOtherField(true)
+                ;
+	......
+    }
 ```
 #### 集成spring
 ```
