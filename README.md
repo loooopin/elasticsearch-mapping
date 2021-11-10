@@ -127,6 +127,7 @@ public class EsSearchHelperConfig {
 
 使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。
 注：1)聚合查询不支持分页;2)没有设置orderBy的话，返回的lastHitSortValues将为空
+
 #### 4.	我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做
 ```
 esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
@@ -185,5 +186,6 @@ DefaultEsRequestBuilder requestBuilder = (DefaultEsRequestBuilder)esSearchHelper
     @EsComparison(ComparisonEnums.IN)
     private List<Integer> columnAList;
 ```
+
 ### 可能出现的问题
 	解析查询结果时用的是递归，且通过流对HashMap进行了深拷贝。所以在groupBy的字段过多，且结果集的数据量大时，可能会有性能问题。
