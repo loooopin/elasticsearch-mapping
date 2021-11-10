@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.loooopin</groupId>
-    <artifactId>es-mapping-api</artifactId>
+    <artifactId>elasticsearch-mapping-api</artifactId>
     <version>1.0-RELEASE</version>
 
     <properties>
