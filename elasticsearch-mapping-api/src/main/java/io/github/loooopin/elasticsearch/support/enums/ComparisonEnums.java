@@ -8,10 +8,12 @@ package io.github.loooopin.elasticsearch.support.enums;
  */
 public enum ComparisonEnums {
     EQ,
+    NEQ,
     IN,
     LT,
     LTE,
     GT,
     GTE,
+    LIKE,
     ;
 }

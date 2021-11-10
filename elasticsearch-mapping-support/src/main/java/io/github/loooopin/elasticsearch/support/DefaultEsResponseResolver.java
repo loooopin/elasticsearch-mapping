@@ -1,5 +1,8 @@
 package io.github.loooopin.elasticsearch.support;
 
+import io.github.loooopin.elasticsearch.api.AbstractEsResponseResolver;
+import io.github.loooopin.elasticsearch.entity.EsResponse;
+import io.github.loooopin.elasticsearch.support.constants.EsCommonConstants;
 import io.github.loooopin.elasticsearch.util.CollectionUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -8,7 +11,14 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.NumericMetricsAggregation;
+import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.cardinality.ParsedCardinality;
+import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.sum.SumAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.ParsedTopHits;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ParsedValueCount;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 
 import java.io.*;
 import java.util.HashMap;
@@ -22,22 +32,7 @@ import java.util.Map;
  * Time: 18:01
  * Description: 解析查询结果，主要是用来递归解析聚合查询的结果
  */
-public final class EsResponseResolver {
-
-    private Class _class;
-    //groupBy的层级顺序，用于逐层取bucket
-    private LinkedList<String> groupFieldChain;
-    //是否聚合查询
-    private boolean isAggregationQuery;
-
-    private Map<String, String> mappingToJavaFieldsMap;
-
-    private EsResponseResolver(Class _class, LinkedList<String> groupFieldChain, boolean isAggregationQuery, Map<String, String> mappingToJavaFieldsMap) {
-        this._class = _class;
-        this.groupFieldChain = groupFieldChain;
-        this.isAggregationQuery = isAggregationQuery;
-        this.mappingToJavaFieldsMap = mappingToJavaFieldsMap;
-    }
+public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<SearchResponse> {
 
     /**
      * @param _class             查询结果映射为javaBean
@@ -45,12 +40,21 @@ public final class EsResponseResolver {
      * @param isAggregationQuery 是否是聚合查询结果
      * @return
      */
-    public static EsResponseResolver resolver(Class _class, LinkedList<String> groupFieldChain, boolean isAggregationQuery) {
-        Map<String, String> mappingToJavaFieldsMap = EsBeanContext.getMappingToJavaFieldsMap(_class);
+    public DefaultEsResponseResolver(Class _class, LinkedList<String> groupFieldChain, boolean isAggregationQuery) {
+        this._class = _class;
+        this.groupFieldChain = groupFieldChain;
+        this.isAggregationQuery = isAggregationQuery;
+    }
+
+
+    @Override
+    public DefaultEsResponseResolver loadContext() {
+        Map<String, String> mappingToJavaFieldsMap = EsBeanContext.getMappingToJavaFieldsMap(this._class);
         if (CollectionUtils.isEmpty(mappingToJavaFieldsMap)) {
-            throw new IllegalArgumentException(_class.getName() + "未配置字段映射关系");
+            throw new IllegalArgumentException(this._class.getName() + "未配置字段映射关系");
         }
-        return new EsResponseResolver(_class, groupFieldChain, isAggregationQuery, mappingToJavaFieldsMap);
+        this.mappingToJavaFieldsMap = mappingToJavaFieldsMap;
+        return this;
     }
 
     /**
@@ -59,7 +63,8 @@ public final class EsResponseResolver {
      * @param searchResponse
      * @return
      */
-    public LinkedList resolve(SearchResponse searchResponse) throws IOException {
+    @Override
+    public EsResponse resolve(SearchResponse searchResponse) throws IOException {
         if (this.isAggregationQuery) {
             return resolveAggregationResponse(searchResponse);
         }
@@ -72,14 +77,19 @@ public final class EsResponseResolver {
      * @param searchResponse
      * @return
      */
-    private LinkedList<Map<String, Object>> resolveNormalResponse(SearchResponse searchResponse) {
+    @Override
+    protected EsResponse resolveNormalResponse(SearchResponse searchResponse) {
         LinkedList<Map<String, Object>> responses = new LinkedList<>();
         SearchHit[] hits = searchResponse.getHits().getHits();
         for (SearchHit hit : hits) {
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
             responses.add(sourceAsMap);
         }
-        return responses;
+        EsResponse esResponse = new EsResponse();
+        esResponse.setContent(responses);
+        esResponse.setTotalElement(getTotalElement(searchResponse));
+        esResponse.setLastHitSortValues(hits[hits.length-1].getSortValues());
+        return esResponse;
     }
 
     /**
@@ -88,11 +98,30 @@ public final class EsResponseResolver {
      * @param searchResponse
      * @return
      */
-    private LinkedList<Map<String, Object>> resolveAggregationResponse(SearchResponse searchResponse) throws IOException {
+    @Override
+    protected EsResponse resolveAggregationResponse(SearchResponse searchResponse) throws IOException {
         Aggregations aggregations = searchResponse.getAggregations();
         LinkedList<Map<String, Object>> responses = new LinkedList<>();
         fillValue(aggregations, 0, responses, new HashMap());
-        return responses;
+        EsResponse esResponse = new EsResponse();
+        esResponse.setContent(responses);
+        return esResponse;
+    }
+
+    /**
+     * 总数
+     *
+     * @param searchResponse
+     * @return
+     */
+    @Override
+    protected int getTotalElement(SearchResponse searchResponse) {
+        Map<String, Aggregation> stringAggregationMap = searchResponse.getAggregations().asMap();
+        if (!stringAggregationMap.containsKey(EsCommonConstants.RESPONSE_TOTAL_ELEMENT_KEY)) {
+            return 0;
+        }
+        Aggregation aggregation = stringAggregationMap.get(EsCommonConstants.RESPONSE_TOTAL_ELEMENT_KEY);
+        return Double.valueOf(((ParsedValueCount) aggregation).value()).intValue();
     }
 
     /**
@@ -136,18 +165,18 @@ public final class EsResponseResolver {
             String name = aggregation.getName();
             //如果是ParsedTopHits的话，就证明是聚合查询且查询了非聚合字段
             if (aggregation instanceof ParsedTopHits) {
-                ParsedTopHits aggregation1 = (ParsedTopHits) aggregation;
-                hits = aggregation1.getHits().getHits();
+                ParsedTopHits parsedTopHits = (ParsedTopHits) aggregation;
+                hits = parsedTopHits.getHits().getHits();
                 continue;
             }
-            template.put(name, ((NumericMetricsAggregation.SingleValue) aggregation).value());
+            template.put(name, getAggregationValue(aggregation));
         }
 
         if (hits != null) {
             for (SearchHit hit : hits) {
                 Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                 sourceAsMap.forEach((k, v) -> {
-                    if(!this.mappingToJavaFieldsMap.containsKey(k)){
+                    if (!this.mappingToJavaFieldsMap.containsKey(k)) {
                         return;
                     }
                     String javaBeanFieldName = this.mappingToJavaFieldsMap.get(k);
@@ -160,6 +189,21 @@ public final class EsResponseResolver {
             }
         }
         responses.add(template);
+    }
+
+    private Double getAggregationValue(Aggregation aggregation) {
+        switch (aggregation.getType()) {
+            case SumAggregationBuilder.NAME:
+            case MaxAggregationBuilder.NAME:
+            case MinAggregationBuilder.NAME:
+                return ((NumericMetricsAggregation.SingleValue) aggregation).value();
+            case ValueCountAggregationBuilder.NAME:
+                return ((ParsedValueCount) aggregation).value();
+            case CardinalityAggregationBuilder.NAME:
+                return ((ParsedCardinality) aggregation).value();
+            default:
+                return null;
+        }
     }
 
     //TODO 深克隆优化

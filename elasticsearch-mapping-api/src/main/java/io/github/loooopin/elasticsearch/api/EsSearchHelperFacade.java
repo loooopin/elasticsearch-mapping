@@ -1,12 +1,9 @@
 package io.github.loooopin.elasticsearch.api;
 
-import io.github.loooopin.elasticsearch.support.EsRequestBuilder;
-import io.github.loooopin.elasticsearch.support.EsResponseResolver;
+import io.github.loooopin.elasticsearch.entity.EsResponse;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * User: loooopin
@@ -14,26 +11,80 @@ import java.util.Map;
  * Time: 18:20
  * Description: 查询入口类
  */
-public abstract class EsSearchHelperFacade<T extends Closeable> {
-    protected T restClient;
 
-    public void setRestClient(T restClient) {
+public abstract class EsSearchHelperFacade<RestClient extends Closeable, RequestBuilder extends AbstractEsRequestBuilder, ResponseResolver extends AbstractEsResponseResolver> {
+    protected RestClient restClient;
+
+    public EsSearchHelperFacade setRestClient(RestClient restClient) {
         this.restClient = restClient;
+        return this;
     }
 
-    public abstract LinkedList<Map<String,Object>> search(EsRequestBuilder requestBuilder, Class responseClass) throws IOException, IllegalAccessException;
+    /**
+     * 不分页且设置返回值类
+     *
+     * @param requestBuilder
+     * @param responseClass
+     * @return
+     * @throws IOException
+     */
+    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass) throws IOException;
 
-    public EsRequestBuilder requestBuilder(Object request) {
-        return EsRequestBuilder.builder(request);
-    }
 
-    public EsRequestBuilder requestBuilder(Class _class) {
-        return EsRequestBuilder.builder(_class);
-    }
+    /**
+     * 分页且设置返回值类
+     *
+     * @param requestBuilder
+     * @param responseClass
+     * @return
+     * @throws IOException
+     */
+    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass, int from, int size) throws IOException;
 
-    public EsResponseResolver responseResolver(EsRequestBuilder requestBuilder, Class responseClass){
-        return EsResponseResolver.resolver(responseClass
-                , new LinkedList(requestBuilder.getGroupBuilders().keySet())
-                , requestBuilder.isAggregationQuery());
-    }
+    /**
+     * 不分页且使用查询参数的类作为返回值
+     *
+     * @param requestBuilder
+     * @return
+     * @throws IOException
+     */
+    public abstract EsResponse search(RequestBuilder requestBuilder) throws IOException;
+
+
+    /**
+     * 分页且使用查询参数的类作为返回值
+     *
+     * @param requestBuilder
+     * @return
+     * @throws IOException
+     */
+    public abstract EsResponse search(RequestBuilder requestBuilder, int from, int size) throws IOException;
+
+    /**
+     * 生成builder
+     * 设置查询条件
+     *
+     * @param request
+     * @return
+     */
+    public abstract RequestBuilder requestBuilder(Object request) throws IllegalAccessException;
+
+    /**
+     * 生成builder
+     * 不设置查询条件，仅设置类反射相关的数据
+     *
+     * @param _class
+     * @return
+     */
+    public abstract RequestBuilder requestBuilder(Class _class) throws IllegalAccessException;
+
+    /**
+     * 如果是聚合查询，则根据requestBuilder中的分组字段进行逐层解析
+     *
+     * @param requestBuilder
+     * @param responseClass
+     * @return
+     */
+    public abstract ResponseResolver responseResolver(RequestBuilder requestBuilder, Class responseClass);
+
 }

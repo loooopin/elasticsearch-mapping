@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface EsIndex {
     String value();
+
+    String refProps() default "application.properties";
 }

@@ -1,9 +1,11 @@
 package io.github.loooopin.elasticsearch.support.enums;
 
 
+import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.sum.SumAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 
 /**
  * User: loooopin
@@ -15,6 +17,8 @@ public enum AggregateEnums {
     SUM(SumAggregationBuilder.NAME),
     MAX(MaxAggregationBuilder.NAME),
     MIN(MinAggregationBuilder.NAME),
+    COUNT(ValueCountAggregationBuilder.NAME),
+    COUNT_DISTINCT(CardinalityAggregationBuilder.NAME),
     ;
     private String type;
 
