@@ -101,7 +101,8 @@ public class EsSearchHelperConfig {
 #### 我想从配置文件中读取es索引名
 使用@EsIndex{"@{key}"}
 #### 应该怎么使用search_after
-使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。注：聚合查询不支持分页，没有设置orderBy的话，每次分页会返回lastHitSortValues将返回空
+使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。
+注：1)聚合查询不支持分页;2)没有设置orderBy的话，返回的lastHitSortValues将为空
 #### 我想实现类似于sql的SELECT SUM(qty) AS totalQty FROM t。应该怎么做
 ```
 esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
