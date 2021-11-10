@@ -6,13 +6,13 @@
   * [查询](#查询)
   * [集成spring](#集成spring)
 * [Q&amp;A](#qa)
-  * [我的实体类都是继承于父类的，父类无法加注解怎么办](#我的实体类都是继承于父类的父类无法加注解怎么办)
-  * [我想从配置文件中读取es索引名](#我想从配置文件中读取es索引名)
-  * [应该怎么使用search\_after](#应该怎么使用search_after)
-  * [我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做](#我想实现类似于sql中聚合字段的别名sumqty-as-totalqty应该怎么做)
-  * [我的查询参数与返回结果不是同一个实体类应该怎么办](#我的查询参数与返回结果不是同一个实体类应该怎么办)
-  * [查询时报错 Elasticsearch exception [type=parsing\_exception, reason=Unknown key for a VALUE\_BOOLEAN in [seq\_no\_primary\_term]\.]](#查询时报错-elasticsearch-exception-typeparsing_exception-reasonunknown-key-for-a-value_boolean-in-seq_no_primary_term)
-  * [查询结果中的某些字段名与实体成员变量的字段对应不上](#查询结果中的某些字段名与实体成员变量的字段对应不上)
+  * [1.我的实体类都是继承于父类的，父类无法加注解怎么办](#1我的实体类都是继承于父类的父类无法加注解怎么办)
+  * [2.我想从配置文件中读取es索引名](#2我想从配置文件中读取es索引名)
+  * [3.应该怎么使用search\_after](#3应该怎么使用search_after)
+  * [4.我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做](#4我想实现类似于sql中聚合字段的别名sumqty-as-totalqty应该怎么做)
+  * [5.我的查询参数与返回结果不是同一个实体类应该怎么办](#5我的查询参数与返回结果不是同一个实体类应该怎么办)
+  * [6.查询时报错 Elasticsearch exception [type=parsing\_exception, reason=Unknown key for a VALUE\_BOOLEAN in [seq\_no\_primary\_term]\.]](#6查询时报错-elasticsearch-exception-typeparsing_exception-reasonunknown-key-for-a-value_boolean-in-seq_no_primary_term)
+  * [7.查询结果中的某些字段名与实体成员变量的字段对应不上](#7查询结果中的某些字段名与实体成员变量的字段对应不上)
 * [可能出现的问题](#可能出现的问题)
 
 ### 说明
@@ -117,14 +117,17 @@ public class EsSearchHelperConfig {
 }
 ```
 ### Q&A
-#### 我的实体类都是继承于父类的，父类无法加注解怎么办
+#### 1.	我的实体类都是继承于父类的，父类无法加注解怎么办
 调用EsBeanContext#addContext方法，手动将相关映射配置到EsBeanContext中。该操作全局只需执行一次，不需要每次查询都add一次
-#### 我想从配置文件中读取es索引名
+
+#### 2.	我想从配置文件中读取es索引名
 使用@EsIndex{"@{key}"}
-#### 应该怎么使用search_after
+
+#### 3.	应该怎么使用search_after
+
 使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。
 注：1)聚合查询不支持分页;2)没有设置orderBy的话，返回的lastHitSortValues将为空
-#### 我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做
+#### 4.	我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做
 ```
 esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
 ```
@@ -146,15 +149,18 @@ esRequestBuilder.aggregation("qty",AggregateEnums.SUM)
 ......
 ```
 注意：使用EsField建立成员变量与es列名的对应关系时，必须是一对一的。不能一对多或多对一或多对多。如果你的Entity.java中还有一个qty字段，那么建议使用第一种方法
-#### 我的查询参数与返回结果不是同一个实体类应该怎么办
+
+#### 5.	我的查询参数与返回结果不是同一个实体类应该怎么办
 ```
 DefaultEsRequestBuilder requestBuilder = (DefaultEsRequestBuilder)esSearchHelperFacade.requestBuilder(param,responseClass);
 ```
 在获得requestBuilder时设置返回值的类型，如果不设置，则默认使用查询参数的类型
-#### 查询时报错 Elasticsearch exception [type=parsing_exception, reason=Unknown key for a VALUE_BOOLEAN in [seq_no_primary_term].]
+
+#### 6.	查询时报错 Elasticsearch exception [type=parsing_exception, reason=Unknown key for a VALUE_BOOLEAN in [seq_no_primary_term].]
 或报一些其他的es相关的错误。大概率是因为org.elasticsearch:elasticsearch的版本问题。请先确认该依赖以及es其他相关依赖包的版本号是否为6.3.2。
 如果你的项目是springboot项目。maven中parent是spring-boot-starter-parent，那么就应该指定elasticsearch.version为6.3.2
-#### 查询结果中的某些字段名与实体成员变量的字段对应不上
+
+#### 7.	查询结果中的某些字段名与实体成员变量的字段对应不上
 检查EsField注解是否同一个value在同一个实体中配置了多次。如：
 ```
     @EsField("column_a")
