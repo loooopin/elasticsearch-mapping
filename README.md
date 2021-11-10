@@ -1,8 +1,9 @@
 ### 说明
 #### 支持es版本 6.3.2
 #### 开发目的
-	简化构建SearchRquest的学习成本。省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
-	省去解析聚合查询结果时for循环嵌套取值，防止业务代码中耦合了大量的只为取值而写的for循环
+	减少es查询语句的学习成本。
+	省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
+	省去解析聚合查询结果时for循环嵌套取值，防止业务代码中耦合了大量的只为取值而写的for循环。
 ### QuickStart
 #### 配置注解
 ```
@@ -37,7 +38,7 @@ public class EsTest {
 ```
 #### 查询
 ```
-    public void t4() throws IOException, IllegalAccessException {
+    public void t4() {
         //此处应更换到全局配置
         RestHighLevelClient restHighLevelClient = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
         EsSearchHelperFacade searchHelperFacade=new RestHighLevelClientHelper();
@@ -68,9 +69,10 @@ public class EsTest {
     }
     
     //单个实体对应多个索引时，不使用EsIndex注解，直接在EsRequestBuilder中setEsIndex
-    public void t4() throws IOException, IllegalAccessException {
+    public void t4() {
 	......
-        EsRequestBuilder esRequestBuilder = searchHelperFacade.requestBuilder(realtime).groupBy("userName", "warehouseNo", "userId")
+        EsRequestBuilder esRequestBuilder = searchHelperFacade.requestBuilder(realtime)
+                .groupBy("userName", "warehouseNo", "userId")
                 .aggregation("qty1", AggregateEnums.SUM)
                 .aggregation("qty2", AggregateEnums.SUM)
 		.setEsIndex("realtime_444")
@@ -107,6 +109,11 @@ esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
 第一个参数为java实体的字段名(如果没有该字段，则应调用EsBeanContext#addContext手动配置)
 第二个参数为聚合函数
 第三个参数为想要映射到的字段
+#### 我的查询参数与返回结果不是同一个实体类应该怎么办
+```
+DefaultEsRequestBuilder requestBuilder = (DefaultEsRequestBuilder)esSearchHelperFacade.requestBuilder(param,responseClass);
+```
+在获得requestBuilder时设置返回值的类型，如果不设置，则默认使用查询参数的类型
 #### 查询时报错 Elasticsearch exception [type=parsing_exception, reason=Unknown key for a VALUE_BOOLEAN in [seq_no_primary_term].]
 或报一些其他的es相关的错误。大概率是因为org.elasticsearch:elasticsearch的版本问题。请先确认该依赖以及es其他相关依赖包的版本号是否为6.3.2。
 如果你的项目是springboot项目。maven中parent是spring-boot-starter-parent，那么就应该指定elasticsearch.version为6.3.2
