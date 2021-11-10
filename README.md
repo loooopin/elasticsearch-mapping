@@ -9,7 +9,7 @@
   * [我的实体类都是继承于父类的，父类无法加注解怎么办](#我的实体类都是继承于父类的父类无法加注解怎么办)
   * [我想从配置文件中读取es索引名](#我想从配置文件中读取es索引名)
   * [应该怎么使用search\_after](#应该怎么使用search_after)
-  * [我想实现类似于sql的SELECT SUM(qty) AS totalQty FROM t。应该怎么做](#我想实现类似于sql的select-sumqty-as-totalqty-from-t应该怎么做)
+  * [我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做](#我想实现类似于sql中聚合字段的别名sumqty-as-totalqty应该怎么做)
   * [我的查询参数与返回结果不是同一个实体类应该怎么办](#我的查询参数与返回结果不是同一个实体类应该怎么办)
   * [查询时报错 Elasticsearch exception [type=parsing\_exception, reason=Unknown key for a VALUE\_BOOLEAN in [seq\_no\_primary\_term]\.]](#查询时报错-elasticsearch-exception-typeparsing_exception-reasonunknown-key-for-a-value_boolean-in-seq_no_primary_term)
   * [查询结果中的某些字段名与实体成员变量的字段对应不上](#查询结果中的某些字段名与实体成员变量的字段对应不上)
@@ -120,13 +120,28 @@ public class EsSearchHelperConfig {
 #### 应该怎么使用search_after
 使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。
 注：1)聚合查询不支持分页;2)没有设置orderBy的话，返回的lastHitSortValues将为空
-#### 我想实现类似于sql的SELECT SUM(qty) AS totalQty FROM t。应该怎么做
+#### 我想实现类似于sql中聚合字段的别名（SUM(qty) AS totalQty）。应该怎么做
 ```
 esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
 ```
-第一个参数为java实体的字段名(如果没有该字段，则应调用EsBeanContext#addContext手动配置)
+aggregation方法中第一个参数为java实体的字段名(如果没有该字段，则应调用EsBeanContext#addContext手动配置)
 第二个参数为聚合函数
 第三个参数为想要映射到的字段
+
+或
+```
+Entity.java
+......
+@EsField("skuQty")
+private Integer totalQty;
+......
+
+Context
+......
+esRequestBuilder.aggregation("qty",AggregateEnums.SUM)
+......
+```
+注意：使用EsField建立成员变量与es列名的对应关系时，必须是一对一的。不能一对多或多对一或多对多。如果你的Entity.java中还有一个qty字段，那么建议使用第一种方法
 #### 我的查询参数与返回结果不是同一个实体类应该怎么办
 ```
 DefaultEsRequestBuilder requestBuilder = (DefaultEsRequestBuilder)esSearchHelperFacade.requestBuilder(param,responseClass);
