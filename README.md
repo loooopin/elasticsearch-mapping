@@ -118,7 +118,7 @@ public class EsSearchHelperConfig {
 ```
 ### Q&A
 #### 我的实体类都是继承于父类的，父类无法加注解怎么办
-调用EsBeanContext#addContext方法，手动将相关映射配置到EsBeanContext中。该操作全局只执行一次，不需要每次查询都add一次
+调用EsBeanContext#addContext方法，手动将相关映射配置到EsBeanContext中。该操作全局只需执行一次，不需要每次查询都add一次
 #### 我想从配置文件中读取es索引名
 使用@EsIndex{"@{key}"}
 #### 应该怎么使用search_after
