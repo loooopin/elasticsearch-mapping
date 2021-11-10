@@ -2,18 +2,18 @@ package io.github.loooopin.elasticsearch.api;
 
 import io.github.loooopin.elasticsearch.entity.EsResponse;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;
 
 public abstract class AbstractEsResponseResolver<Response> {
-
-    protected Class _class;
     //groupBy的层级顺序，用于逐层取bucket
     protected LinkedList<String> groupFieldChain;
     //是否聚合查询
     protected boolean isAggregationQuery;
 
+    @Deprecated
+    protected Class _class;
+    @Deprecated
     protected Map<String, String> mappingToJavaFieldsMap;
 
     /**
@@ -29,7 +29,7 @@ public abstract class AbstractEsResponseResolver<Response> {
      * @param response
      * @return
      */
-    public abstract EsResponse resolve(Response response) throws IOException;
+    public abstract EsResponse resolve(Response response);
 
     /**
      * 解析普通查询结果
@@ -45,7 +45,7 @@ public abstract class AbstractEsResponseResolver<Response> {
      * @param response
      * @return
      */
-    protected abstract EsResponse resolveAggregationResponse(Response response) throws IOException;
+    protected abstract EsResponse resolveAggregationResponse(Response response);
 
     /**
      * 总数

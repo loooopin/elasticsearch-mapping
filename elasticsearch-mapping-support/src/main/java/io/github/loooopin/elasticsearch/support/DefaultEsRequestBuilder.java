@@ -58,34 +58,39 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
      * @return
      */
     @Override
-    public DefaultEsRequestBuilder setRequest(Object request) throws IllegalAccessException {
-        Class _class = request.getClass();
+    public DefaultEsRequestBuilder setRequest(Object request) {
         this.request = request;
 
-        return this.loadContext(_class);
+        return this;
     }
 
     /**
      * 加载类反射相关的数据
      *
-     * @param _class
+     * @param requestClass
+     * @param responseClass
      * @return
      */
     @Override
-    public DefaultEsRequestBuilder loadContext(Class _class) throws IllegalAccessException {
-        String index = EsBeanContext.getIndex(_class);
-        Map<String, Field> fieldsMap = EsBeanContext.getFieldsMap(_class);
-        Map<String, String> fieldMappingsMap = EsBeanContext.getFieldMappingsMap(_class);
-        Map<String, ComparisonEnums> comparesMap = EsBeanContext.getComparesMap(_class);
-        if (CollectionUtils.isEmpty(fieldMappingsMap)) {
-            throw new EsBuildRequestException(_class.getName() + "未配置字段映射关系");
+    public DefaultEsRequestBuilder loadContext(Class requestClass, Class responseClass) {
+        String index = EsBeanContext.getIndex(requestClass);
+        Map<String, Field> requestFieldsMap = EsBeanContext.getFieldsMap(requestClass);
+        Map<String, String> requestFieldMappingsMap = EsBeanContext.getFieldMappingsMap(requestClass);
+        Map<String, String> responseFieldMappingsMap = EsBeanContext.getFieldMappingsMap(responseClass);
+        Map<String, ComparisonEnums> requestComparesMap = EsBeanContext.getComparesMap(requestClass);
+        if (CollectionUtils.isEmpty(requestFieldMappingsMap)) {
+            throw new EsBuildRequestException(requestClass.getName() + "未配置字段映射关系");
         }
-        if (CollectionUtils.isEmpty(comparesMap)) {
-            throw new EsBuildRequestException(_class.getName() + "未配置字段比较符");
+        if (CollectionUtils.isEmpty(responseFieldMappingsMap)) {
+            throw new EsBuildRequestException(requestClass.getName() + "未配置返回值字段映射关系");
         }
-        this.fieldsMap = fieldsMap;
-        this.fieldMappingsMap = fieldMappingsMap;
-        this.comparesMap = comparesMap;
+        if (CollectionUtils.isEmpty(requestComparesMap)) {
+            throw new EsBuildRequestException(requestClass.getName() + "未配置字段比较符");
+        }
+        this.requestFieldsMap = requestFieldsMap;
+        this.requestFieldMappingsMap = requestFieldMappingsMap;
+        this.responseFieldMappingsMap = responseFieldMappingsMap;
+        this.requestComparesMap = requestComparesMap;
         this.index = index;
         this.buildQuery();
         return this;
@@ -183,7 +188,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
     @Override
     public DefaultEsRequestBuilder groupBy(Integer size, String... groupFields) {
         for (String groupField : groupFields) {
-            String esFieldName = this.fieldMappingsMap.get(groupField);
+            String esFieldName = this.requestFieldMappingsMap.get(groupField);
             if (esFieldName == null) {
                 continue;
             }
@@ -208,7 +213,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
         if (this.isAggregationQuery) {
             return this;
         }
-        String orderByEsFieldName = this.fieldMappingsMap.get(orderByJavaBeanFieldName);
+        String orderByEsFieldName = this.requestFieldMappingsMap.get(orderByJavaBeanFieldName);
         if (StringUtils.isEmpty(orderByEsFieldName)) {
             return this;
         }
@@ -222,7 +227,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
             return this;
         }
         map.forEach((k, v) -> {
-            String orderByEsFieldName = this.fieldMappingsMap.get(k);
+            String orderByEsFieldName = this.requestFieldMappingsMap.get(k);
             if (StringUtils.isEmpty(orderByEsFieldName)) {
                 return;
             }
@@ -255,7 +260,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
      */
     @Override
     public DefaultEsRequestBuilder aggregation(String aggregateFieldName, AggregateEnums aggregateEnum, String targetFieldName) {
-        String esFieldName = this.fieldMappingsMap.get(aggregateFieldName);
+        String esFieldName = this.responseFieldMappingsMap.get(aggregateFieldName);
         if (esFieldName == null) {
             return this;
         }
@@ -342,7 +347,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
             return this;
         }
         this.topHitsAggregationBuilder = AggregationBuilders.topHits(OTHER_FIELDS).size(1);
-        String orderByEsFieldName = this.fieldMappingsMap.get(orderByJavaBeanFieldName);
+        String orderByEsFieldName = this.requestFieldMappingsMap.get(orderByJavaBeanFieldName);
         if (StringUtils.isEmpty(orderByEsFieldName)) {
             return this;
         }
@@ -357,7 +362,7 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
         }
         this.topHitsAggregationBuilder = AggregationBuilders.topHits(OTHER_FIELDS).size(1);
         map.forEach((k, v) -> {
-            String orderByEsFieldName = this.fieldMappingsMap.get(k);
+            String orderByEsFieldName = this.requestFieldMappingsMap.get(k);
             if (StringUtils.isEmpty(orderByEsFieldName)) {
                 return;
             }
@@ -402,11 +407,9 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
 
     /**
      * 生成查询条件
-     *
-     * @throws IllegalAccessException
      */
     @Override
-    protected void buildQuery() throws IllegalAccessException {
+    protected void buildQuery() {
         if (this.filter != null) {
             return;
         }
@@ -414,10 +417,15 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
         if (this.request == null) {
             return;
         }
-        Set<String> keys = this.fieldsMap.keySet();
+        Set<String> keys = this.requestFieldsMap.keySet();
         for (String key : keys) {
-            Field field = this.fieldsMap.get(key);
-            Object o = field.get(this.request);
+            Field field = this.requestFieldsMap.get(key);
+            Object o = null;
+            try {
+                o = field.get(this.request);
+            } catch (IllegalAccessException e) {
+                throw new EsBuildRequestException("获取查询参数值时发生异常", e);
+            }
             if (o == null) {
                 continue;
             }
@@ -440,14 +448,14 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
      * @param value
      */
     private void addSearchCondition(String beanFieldName, Object value) {
-        if (!this.comparesMap.containsKey(beanFieldName)) {
+        if (!this.requestComparesMap.containsKey(beanFieldName)) {
             return;
         }
-        if (!this.fieldMappingsMap.containsKey(beanFieldName)) {
+        if (!this.requestFieldMappingsMap.containsKey(beanFieldName)) {
             return;
         }
-        ComparisonEnums comparisonEnum = this.comparesMap.get(beanFieldName);
-        String esFieldName = this.fieldMappingsMap.get(beanFieldName);
+        ComparisonEnums comparisonEnum = this.requestComparesMap.get(beanFieldName);
+        String esFieldName = this.requestFieldMappingsMap.get(beanFieldName);
         switch (comparisonEnum) {
             case EQ:
                 this.and(QueryBuilders.termQuery(esFieldName, value));

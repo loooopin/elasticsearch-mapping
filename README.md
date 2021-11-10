@@ -1,7 +1,7 @@
 ### 说明
 #### 支持es版本 6.3.2
 #### 开发目的
-	省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
+	简化构建SearchRquest的学习成本。省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
 	省去解析聚合查询结果时for循环嵌套取值，防止业务代码中耦合了大量的只为取值而写的for循环
 ### QuickStart
 #### 配置注解
@@ -53,7 +53,8 @@ public class EsTest {
         }});
         realtime.setWarehouseNo("warehouseA");
 
-        EsRequestBuilder esRequestBuilder = searchHelperFacade.requestBuilder(realtime).groupBy("userName", "warehouseNo", "userId")
+        EsRequestBuilder esRequestBuilder = searchHelperFacade.requestBuilder(realtime)
+                .groupBy("userName", "warehouseNo", "userId")
                 .aggregation("qty1", AggregateEnums.SUM)
                 .aggregation("qty2", AggregateEnums.SUM)
                 //非聚合的字段也查询
@@ -61,7 +62,7 @@ public class EsTest {
                 ;
 
         //查询
-        LinkedList<Map<String, Object>> search = searchHelperFacade.search(esRequestBuilder, EsTest.class);
+        LinkedList<Map<String, Object>> search = searchHelperFacade.search(esRequestBuilder);
         System.out.println(JSON.toJSONString(search));
         System.out.println(JSON.parseArray(JSON.toJSONString(search),EsTest.class));
     }
@@ -93,6 +94,19 @@ public class EsSearchHelperConfig {
 }
 ```
 ### Q&A
+#### 我的实体类都是继承于父类的，父类无法加注解怎么办
+调用EsBeanContext#addContext方法，手动将相关映射配置到EsBeanContext中。该操作全局只执行一次，不需要每次查询都add一次
+#### 我想从配置文件中读取es索引名
+使用@EsIndex{"@{key}"}
+#### 应该怎么使用search_after
+使用分页查询，每次分页会返回lastHitSortValues（本次查询的最后一个sortValues）。调用EsRequestBuilder#setSortValues传入该值即可。注：聚合查询不支持分页，没有设置orderBy的话，每次分页会返回lastHitSortValues将返回空
+#### 我想实现类似于sql的SELECT SUM(qty) AS totalQty FROM t。应该怎么做
+```
+esRequestBuilder.aggregation("qty",AggregateEnums.SUM,"totalQty")
+```
+第一个参数为java实体的字段名(如果没有该字段，则应调用EsBeanContext#addContext手动配置)
+第二个参数为聚合函数
+第三个参数为想要映射到的字段
 #### 查询时报错 Elasticsearch exception [type=parsing_exception, reason=Unknown key for a VALUE_BOOLEAN in [seq_no_primary_term].]
 或报一些其他的es相关的错误。大概率是因为org.elasticsearch:elasticsearch的版本问题。请先确认该依赖以及es其他相关依赖包的版本号是否为6.3.2。
 如果你的项目是springboot项目。maven中parent是spring-boot-starter-parent，那么就应该指定elasticsearch.version为6.3.2

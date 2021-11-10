@@ -28,9 +28,11 @@ public abstract class AbstractEsRequestBuilder<Request> {
 
     //是否是聚合查询
     protected boolean isAggregationQuery;
-    protected Map<String, Field> fieldsMap;
-    protected Map<String, String> fieldMappingsMap;
-    protected Map<String, ComparisonEnums> comparesMap;
+    protected Map<String, Field> requestFieldsMap;
+    protected Map<String, String> requestFieldMappingsMap;
+    protected Map<String, ComparisonEnums> requestComparesMap;
+
+    protected Map<String, String> responseFieldMappingsMap;
 
     //普通查询时使用searchAfter，该值为上一次分页查询的最后一位的sortValue
     protected Object[] sortValues;
@@ -41,15 +43,16 @@ public abstract class AbstractEsRequestBuilder<Request> {
      * @param request
      * @return
      */
-    public abstract AbstractEsRequestBuilder setRequest(Object request) throws IllegalAccessException;
+    public abstract AbstractEsRequestBuilder setRequest(Object request);
 
     /**
      * 加载类反射相关的数据
      *
-     * @param _class
+     * @param requestClass
+     * @param responseClass
      * @return
      */
-    public abstract AbstractEsRequestBuilder loadContext(Class _class) throws IllegalAccessException;
+    public abstract AbstractEsRequestBuilder loadContext(Class requestClass, Class responseClass);
 
     /**
      * 设置聚合条件
@@ -140,10 +143,8 @@ public abstract class AbstractEsRequestBuilder<Request> {
 
     /**
      * 生成查询条件
-     *
-     * @throws IllegalAccessException
      */
-    protected abstract void buildQuery() throws IllegalAccessException;
+    protected abstract void buildQuery();
 
     /**
      * 构建查询对象
