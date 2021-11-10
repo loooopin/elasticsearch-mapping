@@ -206,7 +206,13 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
         }
     }
 
-    //TODO 深克隆优化
+    /**
+     * 深克隆
+     *
+     * @param template
+     * @return
+     * @throws IOException
+     */
     private HashMap<String, Object> deepClone(HashMap<String, Object> template) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
