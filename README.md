@@ -16,7 +16,10 @@
 * [可能出现的问题](#可能出现的问题)
 
 ### 说明
-#### 支持的es版本：6.3.2
+#### 版本相关
+	支持的es版本:6.3.2,理论上支持6.3.2-7.0.0
+	使用的org.elasticsearch版本：6.3.2
+	使用的org.elasticsearch.client版本：rest-high-level-client:6.3.2
 #### 开发目的
 	减少es查询语句的学习成本。
 	省去聚合查询构建SearchRequest时，嵌套的去拼装AggregationBuilder。
