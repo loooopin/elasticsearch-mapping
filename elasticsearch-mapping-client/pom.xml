@@ -6,7 +6,7 @@
 
     <groupId>io.github.loooopin</groupId>
     <artifactId>elasticsearch-mapping-client</artifactId>
-    <version>1.0-HIGHLEVEL-RELEASE</version>
+    <version>6.3.2-HIGHLEVEL-RELEASE</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
