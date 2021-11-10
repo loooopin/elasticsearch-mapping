@@ -3,6 +3,7 @@ package io.github.loooopin.elasticsearch.support;
 import io.github.loooopin.elasticsearch.api.AbstractEsResponseResolver;
 import io.github.loooopin.elasticsearch.entity.EsResponse;
 import io.github.loooopin.elasticsearch.support.constants.EsCommonConstants;
+import io.github.loooopin.elasticsearch.support.exceptions.EsResolveResponseException;
 import io.github.loooopin.elasticsearch.util.CollectionUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
@@ -40,14 +41,21 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
      * @param isAggregationQuery 是否是聚合查询结果
      * @return
      */
+    @Deprecated
     public DefaultEsResponseResolver(Class _class, LinkedList<String> groupFieldChain, boolean isAggregationQuery) {
         this._class = _class;
         this.groupFieldChain = groupFieldChain;
         this.isAggregationQuery = isAggregationQuery;
     }
 
+    public DefaultEsResponseResolver(LinkedList<String> groupFieldChain, boolean isAggregationQuery) {
+        this.groupFieldChain = groupFieldChain;
+        this.isAggregationQuery = isAggregationQuery;
+    }
+
 
     @Override
+    @Deprecated
     public DefaultEsResponseResolver loadContext() {
         Map<String, String> mappingToJavaFieldsMap = EsBeanContext.getMappingToJavaFieldsMap(this._class);
         if (CollectionUtils.isEmpty(mappingToJavaFieldsMap)) {
@@ -64,7 +72,7 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
      * @return
      */
     @Override
-    public EsResponse resolve(SearchResponse searchResponse) throws IOException {
+    public EsResponse resolve(SearchResponse searchResponse) {
         if (this.isAggregationQuery) {
             return resolveAggregationResponse(searchResponse);
         }
@@ -99,10 +107,14 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
      * @return
      */
     @Override
-    protected EsResponse resolveAggregationResponse(SearchResponse searchResponse) throws IOException {
+    protected EsResponse resolveAggregationResponse(SearchResponse searchResponse) {
         Aggregations aggregations = searchResponse.getAggregations();
         LinkedList<Map<String, Object>> responses = new LinkedList<>();
-        fillValue(aggregations, 0, responses, new HashMap());
+        try {
+            fillValue(aggregations, 0, responses, new HashMap());
+        } catch (IOException e) {
+            throw new EsResolveResponseException("解析查询结果时发生异常", e);
+        }
         EsResponse esResponse = new EsResponse();
         esResponse.setContent(responses);
         return esResponse;

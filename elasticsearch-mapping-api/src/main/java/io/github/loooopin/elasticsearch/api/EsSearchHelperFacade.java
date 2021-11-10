@@ -3,7 +3,6 @@ package io.github.loooopin.elasticsearch.api;
 import io.github.loooopin.elasticsearch.entity.EsResponse;
 
 import java.io.Closeable;
-import java.io.IOException;
 
 /**
  * User: loooopin
@@ -21,34 +20,12 @@ public abstract class EsSearchHelperFacade<RestClient extends Closeable, Request
     }
 
     /**
-     * 不分页且设置返回值类
-     *
-     * @param requestBuilder
-     * @param responseClass
-     * @return
-     * @throws IOException
-     */
-    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass) throws IOException;
-
-
-    /**
-     * 分页且设置返回值类
-     *
-     * @param requestBuilder
-     * @param responseClass
-     * @return
-     * @throws IOException
-     */
-    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass, int from, int size) throws IOException;
-
-    /**
      * 不分页且使用查询参数的类作为返回值
      *
      * @param requestBuilder
      * @return
-     * @throws IOException
      */
-    public abstract EsResponse search(RequestBuilder requestBuilder) throws IOException;
+    public abstract EsResponse search(RequestBuilder requestBuilder);
 
 
     /**
@@ -56,9 +33,8 @@ public abstract class EsSearchHelperFacade<RestClient extends Closeable, Request
      *
      * @param requestBuilder
      * @return
-     * @throws IOException
      */
-    public abstract EsResponse search(RequestBuilder requestBuilder, int from, int size) throws IOException;
+    public abstract EsResponse search(RequestBuilder requestBuilder, int from, int size);
 
     /**
      * 生成builder
@@ -67,7 +43,7 @@ public abstract class EsSearchHelperFacade<RestClient extends Closeable, Request
      * @param request
      * @return
      */
-    public abstract RequestBuilder requestBuilder(Object request) throws IllegalAccessException;
+    public abstract RequestBuilder requestBuilder(Object request);
 
     /**
      * 生成builder
@@ -76,15 +52,67 @@ public abstract class EsSearchHelperFacade<RestClient extends Closeable, Request
      * @param _class
      * @return
      */
-    public abstract RequestBuilder requestBuilder(Class _class) throws IllegalAccessException;
+    public abstract RequestBuilder requestBuilder(Class _class);
 
     /**
-     * 如果是聚合查询，则根据requestBuilder中的分组字段进行逐层解析
+     * 生成builder
+     * 设置查询条件
+     * 设置返回值类型
+     *
+     * @param request
+     * @param responseClass
+     * @return
+     */
+    public abstract RequestBuilder requestBuilder(Object request, Class responseClass);
+
+    /**
+     * 生成builder
+     * 不设置查询条件
+     * 设置返回值类型
+     *
+     * @param requestClass
+     * @param responseClass
+     * @return
+     */
+    public abstract RequestBuilder requestBuilder(Class requestClass, Class responseClass);
+
+    /**
+     * 获取解析器
+     *
+     * @param requestBuilder
+     * @return
+     */
+    public abstract ResponseResolver responseResolver(RequestBuilder requestBuilder);
+
+    /**
+     * 不分页且设置返回值类
      *
      * @param requestBuilder
      * @param responseClass
      * @return
      */
+    @Deprecated
+    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass);
+
+
+    /**
+     * 分页且设置返回值类
+     *
+     * @param requestBuilder
+     * @param responseClass
+     * @return
+     */
+    @Deprecated
+    public abstract EsResponse search(RequestBuilder requestBuilder, Class responseClass, int from, int size);
+
+    /**
+     * 获取解析器
+     *
+     * @param requestBuilder
+     * @param responseClass
+     * @return
+     */
+    @Deprecated
     public abstract ResponseResolver responseResolver(RequestBuilder requestBuilder, Class responseClass);
 
 }
