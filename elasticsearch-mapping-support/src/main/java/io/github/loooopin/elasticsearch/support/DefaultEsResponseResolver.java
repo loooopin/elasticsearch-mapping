@@ -88,7 +88,7 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
         EsResponse esResponse = new EsResponse();
         esResponse.setContent(responses);
         esResponse.setTotalElement(getTotalElement(searchResponse));
-        esResponse.setLastHitSortValues(hits[hits.length-1].getSortValues());
+        esResponse.setLastHitSortValues(hits[hits.length - 1].getSortValues());
         return esResponse;
     }
 
@@ -206,7 +206,13 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
         }
     }
 
-    //TODO 深克隆优化
+    /**
+     * 深克隆
+     *
+     * @param template
+     * @return
+     * @throws IOException
+     */
     private HashMap<String, Object> deepClone(HashMap<String, Object> template) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);

@@ -102,6 +102,7 @@ public abstract class AbstractEsRequestBuilder<Request> {
      * @return
      */
     public abstract AbstractEsRequestBuilder not(QueryBuilder queryBuilder);
+
     /**
      * 手动设置or的查询条件
      * 必须在filter已经生成后，才能手动设置
@@ -119,11 +120,14 @@ public abstract class AbstractEsRequestBuilder<Request> {
      * @return
      */
     public abstract AbstractEsRequestBuilder searchOtherFields();
+
     public abstract AbstractEsRequestBuilder searchOtherFields(String orderByJavaBeanFieldName, SortOrder sortOrder);
+
     public abstract AbstractEsRequestBuilder searchOtherFields(Map<String, SortOrder> map);
 
     /**
      * 根据指定字段来计算value_count
+     *
      * @param esFieldName
      * @return
      */
@@ -139,7 +143,7 @@ public abstract class AbstractEsRequestBuilder<Request> {
      *
      * @throws IllegalAccessException
      */
-    protected abstract void buildQuery()throws IllegalAccessException ;
+    protected abstract void buildQuery() throws IllegalAccessException;
 
     /**
      * 构建查询对象
@@ -156,6 +160,7 @@ public abstract class AbstractEsRequestBuilder<Request> {
 
     /**
      * 获得groupBy的层级顺序，用于逐层解析聚合结果
+     *
      * @return
      */
     public abstract LinkedList<String> getGroupFieldChain();

@@ -16,6 +16,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface EsField {
     String value();
+
     //是否仅用于比较，不用于字段映射
     boolean onlyCompare() default false;
 }
