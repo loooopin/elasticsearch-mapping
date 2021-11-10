@@ -10,19 +10,19 @@ import java.util.Map;
  * Description:
  */
 public class CollectionUtils {
-    public static final boolean isEmpty(Collection collection){
-        return collection==null||collection.size()==0;
+    public static final boolean isEmpty(Collection collection) {
+        return collection == null || collection.size() == 0;
     }
 
-    public static final boolean isNotEmpty(Collection collection){
+    public static final boolean isNotEmpty(Collection collection) {
         return !isEmpty(collection);
     }
 
-    public static final boolean isEmpty(Map map){
-        return map==null||map.size()==0;
+    public static final boolean isEmpty(Map map) {
+        return map == null || map.size() == 0;
     }
 
-    public static final boolean isNotEmpty(Map map){
+    public static final boolean isNotEmpty(Map map) {
         return !isEmpty(map);
     }
 }

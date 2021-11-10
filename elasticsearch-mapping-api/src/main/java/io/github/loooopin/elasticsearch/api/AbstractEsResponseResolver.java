@@ -1,6 +1,7 @@
 package io.github.loooopin.elasticsearch.api;
 
 import io.github.loooopin.elasticsearch.entity.EsResponse;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Map;

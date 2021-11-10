@@ -26,10 +26,10 @@ public enum AggregateEnums {
         return type;
     }
 
-    public AggregateEnums typeOf(String type){
+    public AggregateEnums typeOf(String type) {
         AggregateEnums[] values = AggregateEnums.values();
         for (AggregateEnums aggregateEnum : values) {
-            if(aggregateEnum.getType().equals(type)){
+            if (aggregateEnum.getType().equals(type)) {
                 return aggregateEnum;
             }
         }

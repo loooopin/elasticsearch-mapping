@@ -88,7 +88,7 @@ public final class DefaultEsResponseResolver extends AbstractEsResponseResolver<
         EsResponse esResponse = new EsResponse();
         esResponse.setContent(responses);
         esResponse.setTotalElement(getTotalElement(searchResponse));
-        esResponse.setLastHitSortValues(hits[hits.length-1].getSortValues());
+        esResponse.setLastHitSortValues(hits[hits.length - 1].getSortValues());
         return esResponse;
     }
 
