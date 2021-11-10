@@ -21,7 +21,6 @@ import java.util.Properties;
  * Description: 用于缓存实体中的注解和成员变量，省去每次都要反射获取
  */
 public final class EsBeanContext {
-    private static final String PROPERTIES_FOLDER = "spring/properties/";
     private static final String VALUE_IN_PROPERTIES_PREFIX = "${";
     private static final String HAS_NOT_INDEX_NAME = "NONE_INDEX";
     //索引名
@@ -226,8 +225,7 @@ public final class EsBeanContext {
             return propertiesMap.get(propertiesName);
         }
         Properties prop = new Properties();
-        String fileName = PROPERTIES_FOLDER + propertiesName;
-        InputStream inputStream = EsBeanContext.class.getClassLoader().getResourceAsStream(fileName);
+        InputStream inputStream = EsBeanContext.class.getClassLoader().getResourceAsStream(propertiesName);
         prop.load(inputStream);
         propertiesMap.put(propertiesName, prop);
         return prop;
