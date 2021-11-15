@@ -522,8 +522,4 @@ public final class DefaultEsRequestBuilder extends AbstractEsRequestBuilder<Sear
         this.filter = filter;
         return this;
     }
-
-    public void setSortValues(Object[] sortValues) {
-        this.sortValues = sortValues;
-    }
 }

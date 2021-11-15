@@ -178,4 +178,8 @@ public abstract class AbstractEsRequestBuilder<Request> {
     public Class getRequestClass() {
         return this.request.getClass();
     }
+
+    public void setSortValues(Object[] sortValues) {
+        this.sortValues = sortValues;
+    }
 }
